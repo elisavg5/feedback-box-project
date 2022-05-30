@@ -1,4 +1,3 @@
-#include <AudioZero.h>
 #include <LoRa.h>
 #include <SPI.h>
 #include <SD.h>
@@ -9,7 +8,7 @@ const int buttons_number = 3;
 int ANALOG_PIN_Q_1 = 1; 
 int ANALOG_PIN_Q_2 = 2; 
 int ANALOG_PIN_Q_3 = 3; 
-int LED_PINS[] = {0,1,2,3,4,5}; 
+int LED_PINS[] = {0,1,2,3,4,5,19,20,21}; 
 int answers[QUESTIONS_NUMBER];   //value on the questions 
 int buttons[QUESTIONS_NUMBER]; //which buttons on the question
 int count[buttons_number]; // decount for debouncing buttons 
@@ -23,10 +22,9 @@ void setup() {
   pinMode(ANALOG_PIN_Q_1, INPUT);
   pinMode(ANALOG_PIN_Q_2, INPUT); 
   pinMode(ANALOG_PIN_Q_3, INPUT); 
-  for (int k=0; k<sizeof(LED_PINS); k++) {
+  for (int k=0; k<6; k++) {
     pinMode(LED_PINS[k], OUTPUT); 
   }
-
 
   for (int j=0; j<QUESTIONS_NUMBER; j++) {
     buttons[j] = 0; 
@@ -92,10 +90,6 @@ for (int question =0; question<QUESTIONS_NUMBER; question++) {
     }
   else {
       buttons[question] = 0; //otherwise is 0
-      /*if(millis() - led_time > TURN_ON_TIME) {
-        ledOff(); 
-        Serial.println("switch off lights"); 
-      }*/
     }
   }
 }
@@ -109,19 +103,15 @@ void sendData(int question_number) {
     String packet = String(question_number); 
     packet+= ",";
     packet += String(buttons[question_number]); 
-    packet += ",";
-    packet += String(seq_number); 
+    //packet += ",";
+    //packet += String(seq_number); 
     Serial.println(packet); 
     // send packet
     LoRa.beginPacket();
     LoRa.print(packet);
     LoRa.print("!"); 
     LoRa.endPacket();
-    LoRa.beginPacket();
-    LoRa.print("0,1,2");
-    LoRa.print("!"); 
-    LoRa.endPacket();
- 
+
     storingData(question_number,packet); 
     
 }
@@ -158,61 +148,19 @@ void storingData(int question_number, String packet) {
 }
 
 void ledOn(int question_number) {
-  if(question_number == 0 && buttons[question_number] == 1) {
-    Serial.println("led D0"); 
-    digitalWrite(0, HIGH); 
+  int indice = question_number*3+buttons[question_number]-1;
+  Serial.println(indice); 
+  if(question_number != 2) {
+    digitalWrite(LED_PINS[indice], HIGH); 
     delay(1000); 
-    digitalWrite(0,LOW); 
+    digitalWrite(LED_PINS[indice],LOW); 
   }
-  if(question_number == 0 && buttons[question_number] == 2) {
-    Serial.println("ledD1"); 
-    digitalWrite(1, HIGH); 
+  else if (question_number == 2) {
+    analogWrite(LED_PINS[indice], 255); 
     delay(1000); 
-    digitalWrite(1,LOW); 
+    analogWrite(LED_PINS[indice],0); 
   }
-  if(question_number == 0 && buttons[question_number] == 3) {
-    Serial.println("led D2"); 
-    digitalWrite(2, HIGH); 
-    delay(1000); 
-    digitalWrite(2,LOW); 
-  }
-    if(question_number == 1 && buttons[question_number] == 1) {
-    Serial.println("led D3"); 
-    digitalWrite(3, HIGH); 
-    delay(1000); 
-    digitalWrite(3,LOW); 
-  }
-  if(question_number == 1 && buttons[question_number] == 2) {
-    Serial.println("ledD4"); 
-    digitalWrite(4, HIGH); 
-    delay(1000); 
-    digitalWrite(4,LOW); 
-  }
-  if(question_number == 1 && buttons[question_number] == 3) {
-    Serial.println("led D5"); 
-    digitalWrite(5, HIGH); 
-    delay(1000); 
-    digitalWrite(5,LOW); 
-  }
-    if(question_number == 2 && buttons[question_number] == 1) {
-    Serial.println("led A4"); 
-    analogWrite(19, 255); 
-    delay(1000); 
-    analogWrite(19,0); 
-  }
-  if(question_number == 2 && buttons[question_number] == 2) {
-    Serial.println("ledA5"); 
-    analogWrite(20, 255); 
-    delay(1000); 
-    analogWrite(20,0); 
-  }
-  if(question_number == 2 && buttons[question_number] == 3) {
-    Serial.println("led A6"); 
-    analogWrite(21, 255); 
-    delay(1000); 
-    analogWrite(21,0); 
-  }
-
+  
 }
 
 void ledOff() {
