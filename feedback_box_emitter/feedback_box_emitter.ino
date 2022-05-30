@@ -59,34 +59,20 @@ void setup() {
 void loop() {
 
 answers[0] = analogRead(ANALOG_PIN_Q_1);              //Read value on analog pin 1 (the first question) 
-//Serial.println("BUTTONS QUESTION 1"); 
-//Serial.println(answers[0]); 
 answers[1] = analogRead(ANALOG_PIN_Q_2);              //Read value on analog pin 2 (the first question) 
-//Serial.println("BUTTONS QUESTION 2"); 
-//Serial.println(answers[1]); 
-answers[2] = analogRead(ANALOG_PIN_Q_3);             //Read value on analog pin 3 (the first question) 
-//Serial.println("BUTTONS QUESTION 3"); 
-//Serial.println(answers[2]); 
+answers[2] = analogRead(ANALOG_PIN_Q_3);             //Read value on analog pin 3 (the first question)  
 
 //for each question determining wich buttons is push
 for (int question =0; question<QUESTIONS_NUMBER; question++) { 
     
   if (answers[question] > 50 && answers[question] < 180) {        //3 buttons on 1 pin = the difference between them is the value received : between 15 and 180 is the first button
-    debounceButtons(question, 1); 
-    //digitalWrite(0, HIGH); 
-    //Serial.println("led1"); 
-         
+    debounceButtons(question, 1);          
     }
   else if (answers[question] > 200 && answers[question] < 830) {
     debounceButtons(question, 2); //second button for the question
-    //Serial.println("led2"); 
-
     }
   else if (answers[question] > 940) {
-    debounceButtons(question, 3); //third button for the question
-    //digitalWrite(2, HIGH);
-    //Serial.println("led3"); 
- 
+    debounceButtons(question, 3); //third button for the question 
     }
   else {
       buttons[question] = 0; //otherwise is 0
@@ -159,12 +145,5 @@ void ledOn(int question_number) {
     analogWrite(LED_PINS[indice], 255); 
     delay(1000); 
     analogWrite(LED_PINS[indice],0); 
-  }
-  
-}
-
-void ledOff() {
-  digitalWrite(0,LOW); 
-  digitalWrite(1, LOW); 
-  digitalWrite(2, LOW); 
+  }  
 }
