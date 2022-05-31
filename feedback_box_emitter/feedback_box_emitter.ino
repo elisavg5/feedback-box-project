@@ -8,7 +8,7 @@ const int buttons_number = 3;
 int ANALOG_PIN_Q_1 = 1; 
 int ANALOG_PIN_Q_2 = 2; 
 int ANALOG_PIN_Q_3 = 3; 
-int LED_PINS[] = {0,1,2,3,4,5,19,20,21}; 
+int LED_PINS[] = {0,1,2,3,6,5,19,20,21}; 
 int answers[QUESTIONS_NUMBER];   //value on the questions 
 int buttons[QUESTIONS_NUMBER]; //which buttons on the question
 int count[buttons_number]; // decount for debouncing buttons 
