@@ -1,4 +1,3 @@
-#include <AudioZero.h>
 #include <LoRa.h>
 #include <SPI.h>
 #include <SD.h>
@@ -9,6 +8,7 @@ const int buttons_number = 3;
 int ANALOG_PIN_Q_1 = 1; 
 int ANALOG_PIN_Q_2 = 2; 
 int ANALOG_PIN_Q_3 = 3; 
+int LED_PINS[] = {0,1,2,3,6,5,19,20,21}; 
 int answers[QUESTIONS_NUMBER];   //value on the questions 
 int buttons[QUESTIONS_NUMBER]; //which buttons on the question
 int count[buttons_number]; // decount for debouncing buttons 
@@ -22,6 +22,9 @@ void setup() {
   pinMode(ANALOG_PIN_Q_1, INPUT);
   pinMode(ANALOG_PIN_Q_2, INPUT); 
   pinMode(ANALOG_PIN_Q_3, INPUT); 
+  for (int k=0; k<6; k++) {
+    pinMode(LED_PINS[k], OUTPUT); 
+  }
 
   for (int j=0; j<QUESTIONS_NUMBER; j++) {
     buttons[j] = 0; 
@@ -56,29 +59,20 @@ void setup() {
 void loop() {
 
 answers[0] = analogRead(ANALOG_PIN_Q_1);              //Read value on analog pin 1 (the first question) 
-//Serial.println("BUTTONS QUESTION 1"); 
-//Serial.println(answers[0]); 
 answers[1] = analogRead(ANALOG_PIN_Q_2);              //Read value on analog pin 2 (the first question) 
-//Serial.println("BUTTONS QUESTION 2"); 
-//Serial.println(answers[1]); 
-answers[2] = analogRead(ANALOG_PIN_Q_3);             //Read value on analog pin 3 (the first question) 
-//Serial.println("BUTTONS QUESTION 3"); 
-//Serial.println(answers[2]); 
+answers[2] = analogRead(ANALOG_PIN_Q_3);             //Read value on analog pin 3 (the first question)  
 
 //for each question determining wich buttons is push
 for (int question =0; question<QUESTIONS_NUMBER; question++) { 
     
-  if (answers[question] > 15 && answers[question] < 180) {        //3 buttons on 1 pin = the difference between them is the value received : between 15 and 180 is the first button
-    debounceButtons(question, 1); 
-         
+  if (answers[question] > 50 && answers[question] < 180) {        //3 buttons on 1 pin = the difference between them is the value received : between 15 and 180 is the first button
+    debounceButtons(question, 1);          
     }
   else if (answers[question] > 200 && answers[question] < 830) {
     debounceButtons(question, 2); //second button for the question
-
     }
   else if (answers[question] > 940) {
-    debounceButtons(question, 3); //third button for the question
-
+    debounceButtons(question, 3); //third button for the question 
     }
   else {
       buttons[question] = 0; //otherwise is 0
@@ -95,15 +89,15 @@ void sendData(int question_number) {
     String packet = String(question_number); 
     packet+= ",";
     packet += String(buttons[question_number]); 
-    packet += ",";
-    packet += String(seq_number); 
+    //packet += ",";
+    //packet += String(seq_number); 
     Serial.println(packet); 
     // send packet
     LoRa.beginPacket();
     LoRa.print(packet);
     LoRa.print("!"); 
     LoRa.endPacket();
- 
+
     storingData(question_number,packet); 
     
 }
@@ -122,6 +116,7 @@ void debounceButtons(int question_number, int button_response) {
       count[question_number] = 0;
       buttons[question_number] = button_response;
       sendData(question_number);
+      ledOn(question_number); 
     }
 }
 
@@ -136,4 +131,19 @@ void storingData(int question_number, String packet) {
       Serial.println("error opening the file"); 
     }
     dataFile.close(); 
+}
+
+void ledOn(int question_number) {
+  int indice = question_number*3+buttons[question_number]-1;
+  Serial.println(indice); 
+  if(question_number != 2) {
+    digitalWrite(LED_PINS[indice], HIGH); 
+    delay(1000); 
+    digitalWrite(LED_PINS[indice],LOW); 
+  }
+  else if (question_number == 2) {
+    analogWrite(LED_PINS[indice], 255); 
+    delay(1000); 
+    analogWrite(LED_PINS[indice],0); 
+  }  
 }
