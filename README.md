@@ -1,4 +1,4 @@
-# Projet "Boîte à commentaires
+# Projet Feedback Box
 
 ## Description du projet 
 
@@ -57,12 +57,12 @@ Le programme du récepteur est divisé en deux :
 
 # COMMENT ÇA MARCHE 
 
-Arduino
+## Arduino
 -> Dans l'IDE Arduino, dans le gestionnaire de cartes, installez les cartes Arduino SAMD. \
 -> Connectez tout le matériel nécessaire dans les MKRs (n'oubliez pas les antennes) \
 -> Uploader feedback_box_emitter dans le MKR émetteur. 
  
- Raspberry \
+## Raspberry \
 $ sudo apt-get install git \
 $ sudo raspi-config \
 Activer SPI sur le Raspberry Pi : Choisir Interface Option, puis SPI, il faut l’autoriser (enable : yes), valider avec OK \
@@ -72,12 +72,12 @@ $ sudo dpkg -i wiringpi-latest.deb \
 Vous pouvez vérifier l’installation avec :  \
 $ gpio –v 
 
--> Télécharger le code server \
+### Télécharger le code server \
 $ wget https://codeload.github.com/elisavg5/feedback-box-project/zip/raspb_receipt  \
 $ unzip raspb_receipt \
 $ sudo apt-get install unixodbc unixodbc-dev freetds-dev freetds-bin tdsodbc   
 
--> Configuration fichiers ODBC  \
+### Configuration fichiers ODBC  \
 On bouge les documents odbcinst.ini et odbc.ini dans le dossier /etc/  \
 $ sudo mv /home/hi-raspberry/Documents/feedback-box-server-raspb_receipt/odbcinst.ini /etc/ \
 $ sudo mv /home/hi-raspberry/Documents/feedback-box-server-raspb_receipt/odbc.ini /etc/ 
@@ -90,7 +90,7 @@ cd Documents/feedback-box-server-raspb_receipt/server
 On exécute le serveur \
 $ python3 server.py 
 
--> Configurer le récepteur Client \
+### Configurer le récepteur Client \
 On va dans le dossier feedback-box-project-raspb/receipt/rpi-lora-tranceiver-master/dragino_lora_app \
 $ chmod +x dragino_lora_app \
 $ make 
