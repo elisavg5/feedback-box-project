@@ -3,12 +3,13 @@
 #include <SD.h>
 
 int seq_number = 0; 
+const int PARAM_BOX_ID = 1;
 const int QUESTIONS_NUMBER = 3; 
 const int buttons_number = 3; 
 int ANALOG_PIN_Q_1 = 1; 
 int ANALOG_PIN_Q_2 = 2; 
 int ANALOG_PIN_Q_3 = 3; 
-int LED_PINS[] = {0,1,2,3,6,5,19,20,21}; 
+int LED_PINS[] = {3,5,6,0,1,2,19,20,21}; 
 int answers[QUESTIONS_NUMBER];   //value on the questions 
 int buttons[QUESTIONS_NUMBER]; //which buttons on the question
 int count[buttons_number]; // decount for debouncing buttons 
@@ -33,7 +34,7 @@ void setup() {
   path = "data.csv"; 
   Serial.begin(9600);
   
-  while (!Serial);
+  //while (!Serial);
   Serial.print("Initializing SD card...");
 
   // see if the card is present and can be initialized:
@@ -46,7 +47,7 @@ void setup() {
   
   Serial.println("LoRa Sender");
 
-  if (!LoRa.begin(868E6)) {
+  if (!LoRa.begin(868100000)) {
     Serial.println("Starting LoRa failed!");
     while (1);
   }  
@@ -86,16 +87,18 @@ void sendData(int question_number) {
     Serial.print("Sending packet: ");
     Serial.println(seq_number);
     //create packet
+    String packet = String(PARAM_BOX_ID); 
+    packet+= ",";
     String packet = String(question_number); 
     packet+= ",";
     packet += String(buttons[question_number]); 
-    //packet += ",";
-    //packet += String(seq_number); 
+    packet += ",";
+    packet += String(seq_number); 
     Serial.println(packet); 
     // send packet
     LoRa.beginPacket();
     LoRa.print(packet);
-    LoRa.print("!"); 
+    LoRa.print(","); 
     LoRa.endPacket();
 
     storingData(question_number,packet); 
@@ -113,10 +116,10 @@ void debounceButtons(int question_number, int button_response) {
     if(count[question_number]>= DEBOUNCE_COUNT) {
       Serial.print("appui");
       Serial.println(button_response); 
-      count[question_number] = 0;
+      count[question_number] = 0; //debounce utility 
       buttons[question_number] = button_response;
-      sendData(question_number);
-      ledOn(question_number); 
+      sendData(question_number); //sendData on LoRA + store on SD card
+      ledOn(question_number); //turn the right led on 
     }
 }
 
