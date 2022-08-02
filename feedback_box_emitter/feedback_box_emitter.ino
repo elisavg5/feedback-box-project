@@ -69,10 +69,10 @@ for (int question =0; question<QUESTIONS_NUMBER; question++) {
   if (answers[question] > 50 && answers[question] < 180) {        //3 buttons on 1 pin = the difference between them is the value received : between 15 and 180 is the first button
     debounceButtons(question, 1);          
     }
-  else if (answers[question] > 200 && answers[question] < 830) {
+  else if (answers[question] > 200 && answers[question] < 920) {
     debounceButtons(question, 2); //second button for the question
     }
-  else if (answers[question] > 940) {
+  else if (answers[question] > 920) {
     debounceButtons(question, 3); //third button for the question 
     }
   else {
