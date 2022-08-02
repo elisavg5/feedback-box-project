@@ -89,7 +89,7 @@ void sendData(int question_number) {
     //create packet
     String packet = String(PARAM_BOX_ID); 
     packet+= ",";
-    packet+ = String(question_number); 
+    packet+= String(question_number); 
     packet+= ",";
     packet += String(buttons[question_number]); 
     packet += ",";
