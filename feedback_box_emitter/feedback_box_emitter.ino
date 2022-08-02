@@ -89,7 +89,7 @@ void sendData(int question_number) {
     //create packet
     String packet = String(PARAM_BOX_ID); 
     packet+= ",";
-    packet = String(question_number); 
+    packet+ = String(question_number); 
     packet+= ",";
     packet += String(buttons[question_number]); 
     packet += ",";
@@ -113,9 +113,7 @@ void debounceButtons(int question_number, int button_response) {
     if(buttons[question_number] != button_response) {
       count[question_number]++; 
     }
-    if(count[question_number]>= DEBOUNCE_COUNT) {
-      Serial.print("appui");
-      Serial.println(button_response); 
+    if(count[question_number]>= DEBOUNCE_COUNT) { 
       count[question_number] = 0; //debounce utility 
       buttons[question_number] = button_response;
       sendData(question_number); //sendData on LoRA + store on SD card
@@ -138,7 +136,6 @@ void storingData(int question_number, String packet) {
 
 void ledOn(int question_number) {
   int indice = question_number*3+buttons[question_number]-1;
-  Serial.println(indice); 
   if(question_number != 2) {
     digitalWrite(LED_PINS[indice], HIGH); 
     delay(1000); 
